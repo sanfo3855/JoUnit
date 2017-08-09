@@ -12,8 +12,8 @@ Protocol: sodep
 Interfaces: InterfaceAPI
 }
 
-inputPort PortName {
-Location: "socket://172.17.0.1:10000" //sostituire con la prima porta disponibile in automatico
+inputPort OrchestratorIn {
+Location: "auto:ini:/Locations/OrchestratorLocation:file:config.ini"
 Protocol: sodep
 RequestResponse:
   println( string )( void ),
@@ -30,9 +30,9 @@ init{
   file.filename = "TestJoEC.tar"; //sostitire con path del Tar da usare
   file.format = "binary";
   readFile@File( file )( rqImg.file );
-  rqImg.t = "test-joec:latest";
-  rqCnt.name = "test-joec-1";
-  rqCnt.Image = "test-joec";
+  rqImg.t = "test:latest";
+  rqCnt.name = "test-1";
+  rqCnt.Image = "test";
   psCnt.filters.name = rqCnt.name;
   psCnt.filters.status = "exited";
   rmCnt.id = rqCnt.name;
