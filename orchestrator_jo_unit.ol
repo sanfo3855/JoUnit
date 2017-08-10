@@ -30,35 +30,46 @@ init{
   file.filename = "TestJoEC.tar"; //sostitire con path del Tar da usare
   file.format = "binary";
   readFile@File( file )( rqImg.file );
-  rqImg.t = "test:latest";
-  rqCnt.name = "test-1";
-  rqCnt.Image = "test";
+
+  /* Variables for creating a running testing container */
+  rqImg.t = "jounit:latest";
+  rqCnt.name = "jounit-1";
+  rqCnt.Image = "jounit";
   psCnt.filters.name = rqCnt.name;
   psCnt.filters.status = "exited";
-  rmCnt.id = rqCnt.name;
   crq.id = rqCnt.name;
 
-  /* Build Container Image from Dockerfile */
+
+  /* Build New Container Image from Dockerfile */
   build@Jocker( rqImg )( response );
-  println@Console( "*********** CREATED IMAGE "+ rqImg.t + " **********" )( );
-  /* Check if Container already exists */
-  containers@Jocker( psCnt )( response );
-  if( response.container[0].Names[0] == "/" + rqCnt.name ) {
-    removeContainer@Jocker( rmCnt )( response );
-    println@Console( "*********** REMOVED "+ rmCnt.id + " **********" )( )
-  };
+  println@Console( "*********** IMAGE CREATED: "+ rqImg.t + " **********" )( );
   /* Create Container */
   createContainer@Jocker( rqCnt )( response );
-  println@Console( "*********** CREATED CONTAINER "+ rqCnt.name +" **********" )( );
+  println@Console( "*********** CONTAINER CREATED: "+ rqCnt.name +" **********" )( );
   /* Run Container */
   startContainer@Jocker( crq )( response );
-  println@Console( "*********** STARTED "+ crq.id + " **********" )( )
+  println@Console( "*********** CONTAINER STARTED: "+ crq.id + " **********" )( )
 }
 
 main {
   [println ( request )( response ){
-    println@Console( request )( response )
-  }]
+    println@Console( request )( )
+  }]{
+    if( request == "SUCCESS: init" ){
+      /* Variables for clearing testing Container and Image */
+      rmCnt.id = "jounit-1";
+      rmImg.name = "jounit";
+      /* Stop testing Container */
+      stopContainer@Jocker( rmCnt )( response );
+      println@Console( "*********** CONTAINER STOPPED: "+ rmCnt.id + " **********" )();
+      /* Remove testing Container */
+      removeContainer@Jocker( rmCnt )( response );
+      println@Console( "*********** CONTAINER REMOVED: "+ rmCnt.id + " **********" )();
+      /* Remove testing Image*/
+      removeImage@Jocker( rmImg )( response );
+      println@Console( "*********** IMAGE REMOVED: "+ rmCnt.id + " **********" )()
+    }
+  }
 
   [subscribeSessionListener( request )( response ) {
     subscribeSessionListener@Console( request )( response )
