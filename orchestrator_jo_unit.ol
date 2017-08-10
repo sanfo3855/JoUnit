@@ -5,6 +5,8 @@ include "ini_utils.iol"
 include "console.iol"
 include "file.iol"
 include "string_utils.iol"
+include "exec.iol"
+include "runtime.iol"
 
 outputPort Jocker {
 Location: "auto:ini:/Locations/JockerLocation:file:config.ini"
@@ -27,47 +29,70 @@ RequestResponse:
 execution { concurrent }
 
 init{
-  file.filename = "TestJoEC.tar"; //sostitire con path del Tar da usare
-  file.format = "binary";
-  readFile@File( file )( rqImg.file );
+  if(#args == 0){
+    println@Console("Cannot start test without a repo...\n Usage: orchestrator_jo_unit.ol <repo>")( )
+  } else {
+    repo = args[0];
+    println@Console("\n------------ "+ repo + " ------------")();
+    file.filename = "Dockerfile";
+    file.content = ""+
+      "FROM jolielang/testdeployer\n"+
+      "WORKDIR /tempfile\n"+
+      "RUN git clone "+ repo +" && cp -R /tempfile/JoEC/* /microservice && rm -r /tempfile\n"+
+      "WORKDIR /microservice\n"+
+      "RUN jolie /JolieTestSuite/__clients_generator/generate_clients.ol main.ol ./test_suite/ yes\n";
+    writeFile@File( file )( );
 
-  /* Variables for creating a running testing container */
-  rqImg.t = "jounit:latest";
-  rqCnt.name = "jounit-1";
-  rqCnt.Image = "jounit";
-  psCnt.filters.name = rqCnt.name;
-  psCnt.filters.status = "exited";
-  crq.id = rqCnt.name;
+    cmd = "tar -cf Test.tar Dockerfile";
+    exec@Exec( cmd )( response );
+
+    filet.filename = "Test.tar";
+    filet.format = "binary";
+    readFile@File( filet )( rqImg.file );
+
+    cmd = "rm Dockerfile && rm Test.tar";
+    exec@Exec( cmd )( response );
+
+    /* Variables for creating a running testing container */
+    rqImg.t = "jounit:latest";
+    rqCnt.name = "jounit-1";
+    rqCnt.Image = "jounit";
+    psCnt.filters.name = rqCnt.name;
+    psCnt.filters.status = "exited";
+    crq.id = rqCnt.name;
 
 
-  /* Build New Container Image from Dockerfile */
-  build@Jocker( rqImg )( response );
-  println@Console( "*********** IMAGE CREATED: "+ rqImg.t + " **********" )( );
-  /* Create Container */
-  createContainer@Jocker( rqCnt )( response );
-  println@Console( "*********** CONTAINER CREATED: "+ rqCnt.name +" **********" )( );
-  /* Run Container */
-  startContainer@Jocker( crq )( response );
-  println@Console( "*********** CONTAINER STARTED: "+ crq.id + " **********" )( )
+    /* Build New Container Image from Dockerfile */
+    build@Jocker( rqImg )( response );
+    println@Console( "1/6 ---> IMAGE CREATED: "+ rqImg.t )( );
+    /* Create Container */
+    createContainer@Jocker( rqCnt )( response );
+    println@Console( "2/6 ---> CONTAINER CREATED: "+ rqCnt.name )( );
+    /* Run Container */
+    startContainer@Jocker( crq )( response );
+    println@Console( "3/6 ---> CONTAINER STARTED: "+ crq.id )( )
+  }
+
 }
 
 main {
   [println ( request )( response ){
     println@Console( request )( )
   }]{
-    if( request == "SUCCESS: init" ){
+    if( request == " SUCCESS: init" ){
       /* Variables for clearing testing Container and Image */
       rmCnt.id = "jounit-1";
       rmImg.name = "jounit";
       /* Stop testing Container */
       stopContainer@Jocker( rmCnt )( response );
-      println@Console( "*********** CONTAINER STOPPED: "+ rmCnt.id + " **********" )();
+      println@Console( "4/6 ---> CONTAINER STOPPED: "+ rmCnt.id )();
       /* Remove testing Container */
       removeContainer@Jocker( rmCnt )( response );
-      println@Console( "*********** CONTAINER REMOVED: "+ rmCnt.id + " **********" )();
+      println@Console( "5/6 ---> CONTAINER REMOVED: "+ rmCnt.id )();
       /* Remove testing Image*/
       removeImage@Jocker( rmImg )( response );
-      println@Console( "*********** IMAGE REMOVED: "+ rmCnt.id + " **********" )()
+      println@Console( "6/6 ---> IMAGE REMOVED: "+ rmCnt.id )();
+      halt@Runtime()()
     }
   }
 
