@@ -53,10 +53,12 @@ init{
     cmd = "rm Dockerfile && rm Test.tar";
     exec@Exec( cmd )( response );
 
+    /* Freshname for image and container */
+    global.freshname = new;
     /* Variables for creating a running testing container */
-    rqImg.t = "jounit:latest";
-    rqCnt.name = "jounit-1";
-    rqCnt.Image = "jounit";
+    rqImg.t = global.freshname + ":latest";
+    rqCnt.name = global.freshname + "-1";
+    rqCnt.Image = global.freshname;
     psCnt.filters.name = rqCnt.name;
     psCnt.filters.status = "exited";
     crq.id = rqCnt.name;
@@ -81,8 +83,8 @@ main {
   }]{
     if( request == " SUCCESS: init" ){
       /* Variables for clearing testing Container and Image */
-      rmCnt.id = "jounit-1";
-      rmImg.name = "jounit";
+      rmCnt.id = global.freshname + "-1";
+      rmImg.name = global.freshname;
       /* Stop testing Container */
       stopContainer@Jocker( rmCnt )( response );
       println@Console( "4/6 ---> CONTAINER STOPPED: "+ rmCnt.id )();
