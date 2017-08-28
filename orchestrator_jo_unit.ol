@@ -32,6 +32,7 @@ init{
   if(#args == 0){
     println@Console("Cannot start test without a repo...\n Usage: orchestrator_jo_unit.ol <repo>")( )
   } else {
+    parseIniFile@IniUtils( "config.ini" )( iniParsed );
     repo = args[0];
     println@Console("\n------------ "+ repo + " ------------")();
     file.filename = "Dockerfile";
@@ -40,7 +41,8 @@ init{
       "WORKDIR /tempfile\n"+
       "RUN git clone "+ repo +" && cp -R /tempfile/JoEC/* /microservice && rm -r /tempfile\n"+
       "WORKDIR /microservice\n"+
-      "RUN jolie /JolieTestSuite/__clients_generator/generate_clients.ol main.ol ./test_suite/ yes\n";
+      "RUN jolie /JolieTestSuite/__clients_generator/generate_clients.ol main.ol ./test_suite/ yes\n"+
+      "ENV ODEP_LOCATION=" + iniParsed.Locations[0].OrchestratorLocation[0];
     writeFile@File( file )( );
 
     cmd = "tar -cf Test.tar Dockerfile";
