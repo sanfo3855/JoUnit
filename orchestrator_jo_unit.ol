@@ -1,6 +1,7 @@
 
 
 include "public/interfaces/InterfaceAPI.iol"
+include "__validator/public/interfaces/ValidatorInterface.iol"
 include "ini_utils.iol"
 include "console.iol"
 include "file.iol"
@@ -26,7 +27,15 @@ RequestResponse:
   unsubscribeSessionListener( string )( void )
 }
 
+outputPort Validator {
+Interfaces: ValidatorInterface
+}
+
 execution { concurrent }
+
+embedded {
+  Jolie: "__validator/main_validator.ol" in Validator
+}
 
 init{
   if(#args == 0){
@@ -34,15 +43,36 @@ init{
   } else {
     parseIniFile@IniUtils( "config.ini" )( iniParsed );
     repo = args[0];
+    repo.regex="/";
+    split@StringUtils( repo )( repoSpl );
+    repoName = repoSpl.result[#repoSpl.result-1];
+    //repoName = args[1];
+    println@Console( repoName )();
     println@Console("\n------------ "+ repo + " ------------")();
+
+    validate@Validator( )( response );
+    println@Console( response )();
+
     file.filename = "Dockerfile";
     file.content = ""+
       "FROM jolielang/testdeployer\n"+
       "WORKDIR /tempfile\n"+
-      "RUN git clone "+ repo +" && cp -R /tempfile/JoEC/* /microservice && rm -r /tempfile\n"+
+      "RUN git clone "+ repo +" && cp -R /tempfile/"+ repoName +"/* /microservice && rm -r /tempfile\n"+
       "WORKDIR /microservice\n"+
       "RUN jolie /JolieTestSuite/__clients_generator/generate_clients.ol main.ol ./test_suite/ yes\n"+
       "ENV ODEP_LOCATION=" + iniParsed.Locations[0].OrchestratorLocation[0];
+    splitRq = iniParsed.Dependencies[0].nameService[0];
+    splitRq.regex = ",";
+    split@StringUtils( splitRq )( dependencies );
+    for ( i = 0, i <= #dependencies, i++ ) {
+      file.content = file.content + "\n" +
+        "ENV JDEP_DEPSERVICE_"+ i + "=" + dependencies.result[i]
+    };
+    foreach ( child : iniParsed.ExternalVariables[0] ) {
+      file.content = file.content + "\n" +
+      "ENV " + child + "=" + iniParsed.ExternalVariables[0].( child )
+    };
+
     writeFile@File( file )( );
 
     cmd = "tar -cf Test.tar Dockerfile";
