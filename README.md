@@ -37,9 +37,39 @@ Tool used for Unit Test of Jolie Microservices
     include "<outputPortName>.depservice"
     ```
     For dependency we mean an external microservice connected with an output port with our microservice to test.
-
-    For example if you have two dependencies connected with 2 outputPort named "firstDependency" and "secondoDependency", you have to write like this at the top fo init.ol
     
-    > include "firstDependency.depservice"
-    > include "secondDependency.depservice"
+    
+    In the init's main we can write our tests, that needs to be surrounded with ```run( request )( response ) { ... }``` block.
+    
+    ```jolie
+    main{
+        run( request )( response ){
+            /*First test*/
+            goalrq.request_message = <operation1's Request>;
+            goalrq.name = "/<inputPort's Name>/<operation1's Name>";
+            
+            
+            // If you DONT'T NEED dependency for this operation's test
+            goal@GoalManager( grq )( testResponse );
+            
+            // If you NEED a dependency's operation named ```twice``` for this operation's test
+            goal@GoalManager( grq )( testResponse ) | twice( request )( response ){ response = <what dependency should respond>;
+            
+            
+            expectedResponse = <operation1's expected response>;
+            if( testResponse != expectedResult ){
+              fault.message = <significative error message's string>;
+              fault.faultname = <fault's name>;
+              throw( ExecutionFault, fault)
+            }
+            
+            
+            
+            /*Second test*/
+            goalrq.request_message = <operation2's Request>;
+            goalrq.name = "/<inputPort's Name>/<operation2's Name>";
+            ...
+            ...
+         }
+    ```
     
