@@ -1,6 +1,7 @@
 
 
 include "public/interfaces/InterfaceAPI.iol"
+include "public/interfaces/orchestratorInterface.iol"
 include "__validator/public/interfaces/ValidatorInterface.iol"
 include "ini_utils.iol"
 include "console.iol"
@@ -18,13 +19,7 @@ Interfaces: InterfaceAPI
 inputPort OrchestratorIn {
 Location: "auto:ini:/Locations/OrchestratorLocation:file:config.ini"
 Protocol: sodep
-RequestResponse:
-  println( string )( void ),
-  subscribeSessionListener( string )( void ),
-  enableTimestamp( bool )( void ),
-  registerForInput( bool )( void ),
-  print( string )( void),
-  unsubscribeSessionListener( string )( void )
+Interfaces: OrchestratorInterface
 }
 
 outputPort Validator {
@@ -47,7 +42,6 @@ init{
     repo.regex="/";
     split@StringUtils( repo )( repoSpl );
     repoName = repoSpl.result[#repoSpl.result-1];
-    //repoName = args[1];
     println@Console( repoName )();
     println@Console("\n------------ "+ repo + " ------------")();
 
@@ -62,13 +56,6 @@ init{
       "WORKDIR /microservice\n"+
       "RUN jolie /JolieTestSuite/__clients_generator/generate_clients.ol main.ol ./test_suite/ yes & jolie /JolieTestSuite/__metadata_tools/getDependenciesPort.ol main.ol\n"+
       "ENV ODEP_LOCATION=" + iniParsed.Locations[0].OrchestratorLocation[0];
-    splitRq = iniParsed.Dependencies[0].nameService[0];
-    splitRq.regex = ",";
-    split@StringUtils( splitRq )( dependencies );
-    for ( i = 0, i <= #dependencies, i++ ) {
-      file.content = file.content + "\n" +
-        "ENV JDEP_DEPSERVICE_"+ i + "=" + dependencies.result[i]
-    };
     foreach ( child : iniParsed.ExternalVariables[0] ) {
       file.content = file.content + "\n" +
       "ENV " + child + "=" + iniParsed.ExternalVariables[0].( child )
@@ -114,7 +101,7 @@ main {
   [println ( request )( response ){
     println@Console( request )( )
   }]{
-    if( request == " SUCCESS: init" || request == " TEST FAILED: init" ){
+    if( request == " SUCCESS: init" || request == " TEST FAILED: init" || request == "GoalNotFound: init"){
       /* Variables for clearing testing Container and Image */
       rmCnt.id = global.freshname + "-1";
       rmImg.name = global.freshname;
