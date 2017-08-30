@@ -22,11 +22,10 @@ include "./test_suite/dependencies.ol.test"
 
 Format of "dependencies.ol.test":
 
-`<addr>`_constants {_
-
-`<addr>`_const1=<valueConst1>_
-`<addr>`_const2=<valueConst2>_
-`<addr>`_}_
+>_constants {_
+>_const1=<valueConst1>_
+>_const2=<valueConst2>_
+>_}_
 
 
 If your microservice has dependencies, you must include every of it.
