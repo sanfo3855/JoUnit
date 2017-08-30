@@ -101,7 +101,7 @@ main {
   [println ( request )( response ){
     println@Console( request )( )
   }]{
-    if( request == " SUCCESS: init" || request == " TEST FAILED: init" || request == "GoalNotFound: init"){
+    if( request == " SUCCESS: init" || request == " TEST FAILED! : init" || request == "GoalNotFound: init"){
       /* Variables for clearing testing Container and Image */
       rmCnt.id = global.freshname + "-1";
       rmImg.name = global.freshname;
