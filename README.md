@@ -23,8 +23,8 @@ Tool used for Unit Test of Jolie Microservices
     
     ```jolie
     constants {
-      <nameConst1>=<valueConst1>,
-      <nameConst2>=<valueConst2>,
+      nameConst1=<valueConst1>,
+      nameConst2=<valueConst2>,
       ...
     }
     ```
@@ -34,13 +34,12 @@ Tool used for Unit Test of Jolie Microservices
     The syntax for importing a dependency is:
     
     ```jolie
-    include <outputPortName>.depservice
+    include "<outputPortName>.depservice"
     ```
     For dependency we mean an external microservice connected with an output port with our microservice to test.
 
     For example if you have two dependencies connected with 2 outputPort named "firstDependency" and "secondoDependency", you have to write like this at the top fo init.ol
     
     >include "firstDependency.depservice"
-    
     >include "secondDependency.depservice"
     
