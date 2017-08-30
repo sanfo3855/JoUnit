@@ -39,7 +39,8 @@ embedded {
 
 init{
   if(#args == 0){
-    println@Console("Cannot start test without a repo...\n Usage: orchestrator_jo_unit.ol <repo>")( )
+    println@Console("Cannot start test without a repo...\n Usage: orchestrator_jo_unit.ol <repo>")( );
+    halt@Runtime( )( )
   } else {
     parseIniFile@IniUtils( "config.ini" )( iniParsed );
     repo = args[0];
@@ -59,7 +60,7 @@ init{
       "WORKDIR /tempfile\n"+
       "RUN git clone "+ repo +" && cp -R /tempfile/"+ repoName +"/* /microservice && rm -r /tempfile\n"+
       "WORKDIR /microservice\n"+
-      "RUN jolie /JolieTestSuite/__clients_generator/generate_clients.ol main.ol ./test_suite/ yes\n"+
+      "RUN jolie /JolieTestSuite/__clients_generator/generate_clients.ol main.ol ./test_suite/ yes & jolie /JolieTestSuite/__metadata_tools/getDependenciesPort.ol main.ol\n"+
       "ENV ODEP_LOCATION=" + iniParsed.Locations[0].OrchestratorLocation[0];
     splitRq = iniParsed.Dependencies[0].nameService[0];
     splitRq.regex = ",";
@@ -113,7 +114,7 @@ main {
   [println ( request )( response ){
     println@Console( request )( )
   }]{
-    if( request == " SUCCESS: init" ){
+    if( request == " SUCCESS: init" || request == " TEST FAILED: init" ){
       /* Variables for clearing testing Container and Image */
       rmCnt.id = global.freshname + "-1";
       rmImg.name = global.freshname;
@@ -126,7 +127,7 @@ main {
       /* Remove testing Image*/
       removeImage@Jocker( rmImg )( response );
       println@Console( "6/6 ---> IMAGE REMOVED: "+ rmCnt.id )();
-      halt@Runtime()()
+      halt@Runtime( )( )
     }
   }
 

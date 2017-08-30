@@ -21,6 +21,9 @@ main{
 
     /*5) Check that the section Dependencies contains the variable nameService
     and that services listed here exist as port in the MetaData*/
+
+    /*6) Check that include inside init.ol of dependency has depservice as
+    extension */
     response = "VALIDATION Passed!! \nJoUnit's rules followed"
   }]
 }
