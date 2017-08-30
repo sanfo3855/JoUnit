@@ -40,6 +40,6 @@ Tool used for Unit Test of Jolie Microservices
 
     For example if you have two dependencies connected with 2 outputPort named "firstDependency" and "secondoDependency", you have to write like this at the top fo init.ol
     
-    >include "firstDependency.depservice"
-    >include "secondDependency.depservice"
+    > include "firstDependency.depservice"
+    > include "secondDependency.depservice"
     
