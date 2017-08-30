@@ -15,13 +15,13 @@ Tool used for Unit Test of Jolie Microservices
 
     If you need dependencies.ol.test file, you must include it in init.ol
 
-    ```
+    ```jolie
     include "./test_suite/dependencies.ol.test"
     ```
 
     Format of "dependencies.ol.test":
     
-    ```
+    ```jolie
     constants {
       <nameConst1>=<valueConst1>,
       <nameConst2>=<valueConst2>,
@@ -33,7 +33,7 @@ Tool used for Unit Test of Jolie Microservices
 
     The syntax for importing a dependency is:
     
-    ```
+    ```jolie
     include <outputPortName>.depservice
     ```
     For dependency we mean an external microservice connected with an output port with our microservice to test.
