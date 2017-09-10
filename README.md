@@ -10,7 +10,7 @@ Tool used for Unit Test of Jolie Microservices
 
 [2 - JoUnit Configuration](https://github.com/sanfo3855/JoUnit#jounit-configuration)
 
-[2 - Usage](https://github.com/sanfo3855/JoUnit#tools-usage)
+[3 - JoUnit Usage](https://github.com/sanfo3855/JoUnit#jounit-usage)
 
 
 
@@ -136,7 +136,13 @@ goal@GoalManager( grq )( testResponse );
 When we receive the ```testResponse```, we have to compare it with an ```expectedResult```. If ```testResponse``` and ```expectedResult``` don't match we throw a fault that will stop recursively every super-goal.
 
 
-## JoUnit Configuration
+### Packaging
+
+You must pack your microservice, every needed dependencies and the folder test_suite inside a clonable repository.
+
+An example easy to understand can be found [here](https://github.com/sanfo3855/test1)
+
+## 2 - JoUnit Configuration
 
 After cloning JoUnit's repository, you maybe need to edit the ```config.ini``` in the root directory.
 
@@ -144,6 +150,6 @@ After cloning JoUnit's repository, you maybe need to edit the ```config.ini``` i
 
 - ```OrchestratorLocation=socket://172.17.0.1:10005``` is the local IP address on which microservice's container will send the output and on which the orchestrator are waiting. You can change the port, but NOT the address (you will not see the output of every test, even if the test will run successfully).
 
-## Tool's Usage
+## 3 - JoUnit Usage
 
-The only way of using the tool is from this command ``` jolie jounit_orchestrator.ol <repoaddress> ``` (you can also write a Script with a list of similar command and different address)
+The only way of using the tool is from this command ``` jolie orchestrator_jo_unit.ol <repoaddress> ``` (you can also write a Script with a list of similar command and different address)
