@@ -115,6 +115,4 @@ goal@GoalManager( grq )( testResponse );
 ```
 
 When we receive the ```testResponse```, we have to compare it with an ```expectedResult```. If ```testResponse``` and ```expectedResult``` don't match we throw a fault that will stop recursively every super-goal.
-    
-    
-    
+
