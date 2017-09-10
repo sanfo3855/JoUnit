@@ -2,25 +2,36 @@
 Tool used for Unit Test of Jolie Microservices
 
 
-[1. Requirement](https://github.com/sanfo3855/JoUnit#requirement)
+[1 - Requirement](https://github.com/sanfo3855/JoUnit#requirement)
 
-[1.1 Format of init.ol](https://github.com/sanfo3855/JoUnit#format-of-initol)
+[1.1 - Format of init.ol](https://github.com/sanfo3855/JoUnit#format-of-initol)
 
-[1.2 Format of test.ol](https://github.com/sanfo3855/JoUnit#format-of-a-testnameol)
+[1.2 - Format of test.ol](https://github.com/sanfo3855/JoUnit#format-of-a-testnameol)
+
+[2 - JoUnit Configuration](https://github.com/sanfo3855/JoUnit#jounit-configuration)
+
+[2 - Usage](https://github.com/sanfo3855/JoUnit#tools-usage)
 
 
-## Requirement
+
+
+
+## 1 - Requirement
 
 1. Microservice to test (re)named as "main.ol"
 
-1. Directory "test_suite" in the project to test's repository.
+2. Directory "test_suite" in the project to test's repository.
     Within this directory you must put every file needed for the test:
     - init.ol (needed) -> here you will write only a list of goal (format explained below)
     - \<testname\>.ol -> test's code (you can recursively write goal to another <testname1>.ol here)
     - dependencies.ol.test (facultative) -> here you will write variables needed for the test
     - every other file needed for the test (such for example as a JSON with some structured data needed for an operations)
+    
+3. You need [JolieLang](http://jolie-lang.org/) and [Docker](https://www.docker.com/) installed on your computer
 
-### Format of ```init.ol```:
+4. You need a Running Docker Container of [Jocker](https://github.com/jolie/jocker). How to correct run jocker [HERE](http://claudioguidi.blogspot.it/2017/07/orchestrating-docker-containers-with.html)
+
+### 1.1 - Format of ```init.ol```:
 
 The init.ol is simply a list of goal to test surrounded with a ```run( request )( response ) { ... }``` block. Every goal point to a file with test's code inside.
     
@@ -46,7 +57,7 @@ For "Goal" we mean something that needs to be executed successfully for proceedi
 
 If, for example, ```<testname2>```'s goal has a fault, it recursively stop every super-goal in waiting.
     
-### Format of a ```<testname.ol>```
+### 1.2 -Format of a ```<testname.ol>```
 
 If you need ```dependencies.ol.test``` file, you must include it in ```<testname>.ol```
 
@@ -124,3 +135,15 @@ goal@GoalManager( grq )( testResponse );
 
 When we receive the ```testResponse```, we have to compare it with an ```expectedResult```. If ```testResponse``` and ```expectedResult``` don't match we throw a fault that will stop recursively every super-goal.
 
+
+## JoUnit Configuration
+
+After cloning JoUnit's repository, you maybe need to edit the ```config.ini``` in the root directory.
+
+- ```JockerLocation=socket://localhost:8008``` if you have configured Jocker's container as written in [this article](http://claudioguidi.blogspot.it/2017/07/orchestrating-docker-containers-with.html). You must change the port if you have configured Jocker with a different port on your PC's side.
+
+- ```OrchestratorLocation=socket://172.17.0.1:10005``` is the local IP address on which microservice's container will send the output and on which the orchestrator are waiting. You can change the port, but NOT the address (you will not see the output of every test, even if the test will run successfully).
+
+## Tool's Usage
+
+The only way of using the tool is from this command ``` jolie jounit_orchestrator.ol <repoaddress> ``` (you can also write a Script with a list of similar command and different address)
