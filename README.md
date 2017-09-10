@@ -2,11 +2,11 @@
 Tool used for Unit Test of Jolie Microservices
 
 
-[1. Requirement](https://github.com/sanfo3855/JoUnit/edit/master/README.md#requirement)
+[1. Requirement](https://github.com/sanfo3855/JoUnit#requirement)
 
-[1.1 Format of init.ol](https://github.com/sanfo3855/JoUnit/edit/master/README.md#format-of-initol)
+[1.1 Format of init.ol](https://github.com/sanfo3855/JoUnit#format-of-initol)
 
-[1.2 Format of test.ol](https://github.com/sanfo3855/JoUnit/edit/master/README.md#format-of-a-testnameol)
+[1.2 Format of test.ol](https://github.com/sanfo3855/JoUnit#format-of-a-testnameol)
 
 
 ## Requirement
