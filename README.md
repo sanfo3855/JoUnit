@@ -12,7 +12,7 @@ Tool used for Unit Test of Jolie Microservices
     - dependencies.ol.test (facultative) -> here you will write variables needed for the test
     - every other file needed for the test (such for example as a JSON with some structured data needed for an operations)
 
-1. Format of ```init.ol```:
+### Format of ```init.ol```:
 
     The init.ol is simply a list of goal to test surrounded with a ```run( request )( response ) { ... }``` block. Every goal point to a file with test's code inside.
     
@@ -38,7 +38,7 @@ Tool used for Unit Test of Jolie Microservices
     
     If, for example, ```<testname2>```'s goal has a fault, it recursively stop every super-goal in waiting.
     
-2. Format of a ```<testname.ol>```
+### Format of a ```<testname.ol>```
 
     If you need ```dependencies.ol.test``` file, you must include it in ```<testname>.ol```
 
@@ -72,25 +72,15 @@ Tool used for Unit Test of Jolie Microservices
     main{
         run( request )( response ){
             /*First operation test*/
-            // In the node .request_message we put the <operation1> input
             goalrq.request_message = <operation1's Request>;
-            
-            // In the node .name we put the name of the input port on which 
-            // we can find our service and the operation we need to test
             goalrq.name = "/<inputPort's Name>/<operation1's Name>";
             
-            
-            // If you DONT'T NEED dependency for this operation's test
-            // we call a goal
+            // If you DONT'T NEED dependency
             goal@GoalManager( grq )( testResponse );
             
-            // If you NEED a dependency's operation named ```twice``` for 
-            // this operation's test we need to call a goal and in parallel 
-            // we need to provide the dependency's operation needed for the goal
+            // If you NEED a dependency with an operation named "twice"
             { goal@GoalManager( grq )( testResponse ) | twice( request )( response ){ response = <what dependency should respond> };
             
-            // Here we need to compare the testResponse with our expected response
-            // and if they don't match we throw an ExceptionFault
             expectedResponse = <operation1's expected response>;
             if( testResponse != expectedResult ){
               fault.message = <significative error message's string>;
@@ -98,5 +88,33 @@ Tool used for Unit Test of Jolie Microservices
               throw( ExecutionFault, fault)
             }
          }
-    ```  
+    ```
+    
+    
+    In the node .request_message we put the input of ```<operation1>```
+    
+    ```jolie
+    goalrq.request_message = <operation1's Request>;
+    ```
+    
+    In the node .name we put the name of the input port on which we can find our service and the operation we need to test
+    
+    ```jolie
+    goalrq.name = "/<inputPort's Name>/<operation1's Name>";
+    ```
+    
+    There are two ways of calling a goal:
+    - If you DONT'T NEED dependency for this operation's test we simply call a goal
+    ```jolie
+    goal@GoalManager( grq )( testResponse );
+    ```
+    - If you NEED a dependency with an operation named "twice" for this operation's test, we need to call a goal and in parallel we need to provide the dependency's operation needed for the goal
+    
+    ```jolie
+    { goal@GoalManager( grq )( testResponse ) | twice( request )( response ){ response = <what dependency should respond> };
+    ```
+    
+    When we receive the ```testResponse```, we have to compare it with an ```expectedResult```. If ```testResponse``` and ```expectedResult``` don't match we throw a fault that will stop recursively every super-goal.
+    
+    
     
