@@ -57,7 +57,7 @@ For "Goal" we mean something that needs to be executed successfully for proceedi
 
 If, for example, ```<testname2>```'s goal has a fault, it recursively stop every super-goal in waiting.
     
-### 1.2 -Format of a ```<testname.ol>```
+### 1.2 - Format of a ```<testname.ol>```
 
 If you need ```dependencies.ol.test``` file, you must include it in ```<testname>.ol```
 
