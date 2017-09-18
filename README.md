@@ -148,9 +148,11 @@ After cloning JoUnit's repository, you maybe need to edit the ```config.ini``` i
 
 - ```JockerLocation=socket://localhost:8008``` if you have configured Jocker's container as written in [this article](http://claudioguidi.blogspot.it/2017/07/orchestrating-docker-containers-with.html). You must change the port if you have configured Jocker with a different port on your PC's side.
 
-- ```OrchestratorLocation=socket://172.17.0.1:10005``` is the local IP address on which microservice's container will send the output and on which the orchestrator are waiting. You can change the port, but NOT the address (you will not see the output of every test, even if the test will run successfully).
-
-## 3 - JoUnit Usage
+- ```OrchestratorLocation=socket://<IPv4 address>:<port>``` is the local IP address and port on which microservice's container will send the output and on which the orchestrator are waiting. You can change the port, but for the IP address you have to check on which local IP docker container can communicate with the host machine:
+    - for MacOS run ```ifcongif en0 | grep inet```. First output line is the IPv6 address while second's is the IPv4 one. In ```OrchestratorLocation``` you have to write in <IPv4 address> the address in the second line.
+    - for Linux run ```ifcongif docker0 | grep inet```. Output is the IPv4 address that you have to write in <IPv4 address> in ```OrchestratorLocation```
+    
+## 3 - JoUnit Usage```OrchestratorLocation
 
 The only way of using the tool is from this command ``` jolie orchestrator_jo_unit.ol <repo> ```. In \<repo\> you have to write a clonable URL (e.g. from: GitHub, BitBucket or similar versioning service).
 
