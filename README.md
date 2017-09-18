@@ -152,5 +152,5 @@ After cloning JoUnit's repository, you maybe need to edit the ```config.ini``` i
 
 ## 3 - JoUnit Usage
 
-The only way of using the tool is from this command ``` jolie orchestrator_jo_unit.ol <repo> ```. In <repo> you have to write a clonable URL (e.g. from: GitHub, BitBucket or similar versioning service)
+The only way of using the tool is from this command ``` jolie orchestrator_jo_unit.ol <repo> ```. In \<repo\> you have to write a clonable URL (e.g. from: GitHub, BitBucket or similar versioning service)
 You can also write a Script with a list of similar command and different address
