@@ -100,7 +100,7 @@ init{
     rqImg.t = global.freshname + ":latest";
     rqCnt.name = global.freshname + "-1";
     rqCnt.Image = global.freshname;
-    psCnt.filters.name = rqCnt.name;.StopSignal?: string .User?: string .Entrypoint*: string .NetworkingConfig?: void { .EndpointsConfig?: void { .isolated_nw?: void { .IPAMConfig?: void { .LinkLocalIPs*: string .IPv6Address?: string .IPv4Address?: string } .Links*: string .Aliases*: string } } } .AttachStderr?: bool .Hostname?: string .OpenStdin?: bool .Labels?: undefined .Env*: string .Image?: string .NetworkDisabled?: bool .MacAddress?: string .ExposedPorts?: undefined .StdinOnce?: bool .AttachStdout?: bool .WorkingDir?: string .Volumes?: undefined .Domainname?: string .AttachStdin?: bool .name?: string .Tty?: bool .HostConfig?: HostConfig .Cmd*: string .StopTimeout?: int
+    psCnt.filters.name = rqCnt.name;
     psCnt.filters.status = "exited";
     crq.id = rqCnt.name;
 
