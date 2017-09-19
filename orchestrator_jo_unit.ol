@@ -1,4 +1,25 @@
-
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                                    *
+* Copyright (C) 2017 Matteo Sanfelici <sanfelicimatteo@gmail.com>                        *
+*                                                                                    *
+* Permission is hereby granted, free of charge, to any person obtaining a copy of    *
+* this software and associated documentation files (the "Software"), to deal in the  *
+* Software without restriction, including without limitation the rights to use,      *
+* copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the    *
+* Software, and to permit persons to whom the Software is furnished to do so, subject*
+* to the following conditions:                                                       *
+*                                                                                    *
+* The above copyright notice and this permission notice shall be included in all     *
+* copies or substantial portions of the Software.                                    *
+*                                                                                    *
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,*
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A      *
+* PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT *
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION  *
+* OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     *
+* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                             *
+*                                                                                    *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 include "public/interfaces/InterfaceAPI.iol"
 include "public/interfaces/orchestratorInterface.iol"
@@ -79,20 +100,43 @@ init{
     rqImg.t = global.freshname + ":latest";
     rqCnt.name = global.freshname + "-1";
     rqCnt.Image = global.freshname;
-    psCnt.filters.name = rqCnt.name;
+    psCnt.filters.name = rqCnt.name;.StopSignal?: string .User?: string .Entrypoint*: string .NetworkingConfig?: void { .EndpointsConfig?: void { .isolated_nw?: void { .IPAMConfig?: void { .LinkLocalIPs*: string .IPv6Address?: string .IPv4Address?: string } .Links*: string .Aliases*: string } } } .AttachStderr?: bool .Hostname?: string .OpenStdin?: bool .Labels?: undefined .Env*: string .Image?: string .NetworkDisabled?: bool .MacAddress?: string .ExposedPorts?: undefined .StdinOnce?: bool .AttachStdout?: bool .WorkingDir?: string .Volumes?: undefined .Domainname?: string .AttachStdin?: bool .name?: string .Tty?: bool .HostConfig?: HostConfig .Cmd*: string .StopTimeout?: int
     psCnt.filters.status = "exited";
     crq.id = rqCnt.name;
 
 
-    /* Build New Container Image from Dockerfile */
-    build@Jocker( rqImg )( response );
-    println@Console( "1/6 ---> IMAGE CREATED: "+ rqImg.t )( );
-    /* Create Container */
-    createContainer@Jocker( rqCnt )( response );
-    println@Console( "2/6 ---> CONTAINER CREATED: "+ rqCnt.name )( );
-    /* Run Container */
-    startContainer@Jocker( crq )( response );
-    println@Console( "3/6 ---> CONTAINER STARTED: "+ crq.id )( )
+    scope( buildScope )
+    {
+      install( ServerError => println@Console("Fault Raised: ServerError  " + buildScope.ServerError.message)( ); halt@Runtime()() );
+      install( BadParam => println@Console("Fault Raised: BadParam  " + buildScope.BadParam.message)( ); halt@Runtime()() );
+
+      /* Build New Container Image from Dockerfile */
+      build@Jocker( rqImg )( response );
+      println@Console( "1/6 ---> IMAGE CREATED: "+ rqImg.t )( )
+    };
+
+
+    scope( createScope )
+    {
+      install( Conflict => println@Console("Fault Raised: Conflict  " + createScope.Conflict.message)( ); halt@Runtime()() );
+      install( ServerError => println@Console("Fault Raised: ServerError  " + createScope.ServerError.message)( ); halt@Runtime()() );
+      install( NoAttachment => println@Console("Fault Raised: NoAttachment  " + createScope.NoAttachment.message)( ); halt@Runtime()() );
+      install( BadParam => println@Console("Fault Raised: BadParam  " + createScope.BadParam.message)( ); halt@Runtime()() );
+      install( NoSuchImage => println@Console("Fault Raised: NoSuchImage  " + createScope.NoSuchImage.message)( ); halt@Runtime()() );
+
+      /* Create Container */
+      createContainer@Jocker( rqCnt )( response );
+      println@Console( "2/6 ---> CONTAINER CREATED: "+ rqCnt.name )( )
+    };
+
+    scope( startScope ) {
+      install( NoSuchContainer => println@Console("Fault Raised: NoSuchContainer  " + startScope.NoSuchContainer.message)( ); halt@Runtime()() );
+      install( ServerError => println@Console("Fault Raised: ServerError  " + startScope.ServerError.message)( ); halt@Runtime()() );
+      install( AlreadyStarted => println@Console("Fault Raised: AlreadyStarted  " + startScope.AlreadyStarted.message)( ); halt@Runtime()() );
+      /* Run Container */
+      startContainer@Jocker( crq )( response );
+      println@Console( "3/6 ---> CONTAINER STARTED: "+ crq.id )( )
+    }
   }
 
 }
@@ -105,16 +149,35 @@ main {
       /* Variables for clearing testing Container and Image */
       rmCnt.id = global.freshname + "-1";
       rmImg.name = global.freshname;
-      /* Stop testing Container */
-      stopContainer@Jocker( rmCnt )( response );
-      println@Console( "4/6 ---> CONTAINER STOPPED: "+ rmCnt.id )();
-      /* Remove testing Container */
-      removeContainer@Jocker( rmCnt )( response );
-      println@Console( "5/6 ---> CONTAINER REMOVED: "+ rmCnt.id )();
-      /* Remove testing Image*/
-      removeImage@Jocker( rmImg )( response );
-      println@Console( "6/6 ---> IMAGE REMOVED: "+ rmCnt.id )();
-      halt@Runtime( )( )
+
+      scope( stopScope )
+      {
+        install( NoSuchContainer => println@Console("Fault Raised: NoSuchContainer  " + stopScope.NoSuchContainer.message)( ); halt@Runtime()() );
+        install( ServerError => println@Console("Fault Raised: ServerError  " + stopScope.ServerError.message)( ); halt@Runtime()() );
+        install( AlreadyStarted => println@Console("Fault Raised: AlreadyStarted  " + stopScope.AlreadyStarted.message)( ); halt@Runtime()() );
+        /* Stop testing Container */
+        stopContainer@Jocker( rmCnt )( response );
+        println@Console( "4/6 ---> CONTAINER STOPPED: "+ rmCnt.id )()
+      };
+      scope( removeScope )
+      {
+        install( NoSuchContainer => println@Console("Fault Raised: NoSuchContainer  " + removeScope.NoSuchContainer.message)( ); halt@Runtime()() );
+        install( ServerError => println@Console("Fault Raised: ServerError  " + removeScope.ServerError.message)( ); halt@Runtime()() );
+        install( BadParam => println@Console("Fault Raised: BadParam  " + removeScope.BadParam.message)( ); halt@Runtime()() );
+        /* Remove testing Container */
+        removeContainer@Jocker( rmCnt )( response );
+        println@Console( "5/6 ---> CONTAINER REMOVED: "+ rmCnt.id )()
+      };
+      scope( removeImageScope )
+      {
+        install( Conflict => println@Console("Fault Raised: Conflict  " + removeImageScope.Conflict.message)( ); halt@Runtime()() );
+        install( ServerError => println@Console("Fault Raised: ServerError  " + removeImageScope.ServerError.message)( ); halt@Runtime()() );
+        install( NoSuchImage => println@Console("Fault Raised: NoSuchImage  " + removeImageScope.NoSuchImage.message)( ); halt@Runtime()() );
+        /* Remove testing Image*/
+        removeImage@Jocker( rmImg )( response );
+        println@Console( "6/6 ---> IMAGE REMOVED: "+ rmCnt.id )();
+        halt@Runtime( )( )
+      }
     }
   }
 
