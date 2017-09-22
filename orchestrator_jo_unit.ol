@@ -64,17 +64,20 @@ init{
     split@StringUtils( repo )( repoSpl );
     repoName = repoSpl.result[#repoSpl.result-1];
     //println@Console( repoName )();
-    println@Console("\n------------ "+ repo + " ------------")();
+    println@Console("\n############## "+ repo + " ##############")();
+    println@Console( "GETTING Project Source..." )();
+    cmd = "git clone " + repo + " ./tmp";
+    exec@Exec( cmd )( response );
+
 
     validate@Validator( )( response );
-    println@Console( response )();
+    //println@Console( response )();
 
     file.filename = "Dockerfile";
     file.content = ""+
       "FROM jolielang/testdeployer\n"+
-      "WORKDIR /tempfile\n"+
-      "RUN git clone "+ repo +" && cp -R /tempfile/"+ repoName +"/* /microservice && rm -r /tempfile\n"+
       "WORKDIR /microservice\n"+
+      "COPY ./tmp .\n"+
       "RUN jolie /JolieTestSuite/__clients_generator/generate_clients.ol main.ol ./test_suite/ yes & jolie /JolieTestSuite/__metadata_tools/getDependenciesPort.ol main.ol\n"+
       "ENV ODEP_LOCATION=" + iniParsed.Locations[0].OrchestratorLocation[0];
     foreach ( child : iniParsed.ExternalVariables[0] ) {
@@ -84,14 +87,14 @@ init{
 
     writeFile@File( file )( );
 
-    cmd = "tar -cf Test.tar Dockerfile";
+    cmd = "tar -cf Test.tar Dockerfile tmp";
     exec@Exec( cmd )( response );
 
     filet.filename = "Test.tar";
     filet.format = "binary";
     readFile@File( filet )( rqImg.file );
-
-    cmd = "rm Dockerfile && rm Test.tar";
+    rqImf.filename = "Dockerfile";
+    cmd = "rm Dockerfile && rm Test.tar && rm -r tmp/";
     exec@Exec( cmd )( response );
 
     /* Freshname for image and container */
@@ -104,7 +107,7 @@ init{
     psCnt.filters.status = "exited";
     crq.id = rqCnt.name;
 
-
+    println@Console( "Connecting to JOCKER..." )( );  
     scope( buildScope )
     {
       install( ServerError => println@Console("Fault Raised: ServerError  " + buildScope.ServerError.message)( ); halt@Runtime()() );
