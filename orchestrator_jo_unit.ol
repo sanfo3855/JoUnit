@@ -63,7 +63,7 @@ init{
     repo.regex="/";
     split@StringUtils( repo )( repoSpl );
     repoName = repoSpl.result[#repoSpl.result-1];
-    println@Console( repoName )();
+    //println@Console( repoName )();
     println@Console("\n------------ "+ repo + " ------------")();
 
     validate@Validator( )( response );
