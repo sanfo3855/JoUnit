@@ -135,11 +135,6 @@ goal@GoalManager( grq )( testResponse );
 
 When we receive the ```testResponse```, we have to compare it with an ```expectedResult```. If ```testResponse``` and ```expectedResult``` don't match we throw a fault that will stop recursively every super-goal.
 
-
-### Packaging
-
-You must pack your microservice, every needed dependencies and the folder test_suite inside a clonable repository.
-
 An example easy to understand can be found [here](https://github.com/sanfo3855/test1)
 
 ## 2 - JoUnit Configuration
@@ -152,8 +147,9 @@ After cloning JoUnit's repository, you maybe need to edit the ```config.ini``` i
     - for MacOS run ```ifcongif en0 | grep inet```. First output line is the IPv6 address while second's is the IPv4 one. In ```OrchestratorLocation``` you have to write, in <IPv4 address>, the address in the second line.
     - for Linux run ```ifcongif docker0 | grep inet```. Output is the IPv4 address that you have to write in <IPv4 address> in ```OrchestratorLocation```
     
-## 3 - JoUnit Usage```OrchestratorLocation
+## 3 - JoUnit Usage 
+This tool works only with a clonable repository. This tool supports local repository (both absolute and relative path) and online repository ( URL )
 
-The only way of using the tool is from this command ``` jolie orchestrator_jo_unit.ol <repo> ```. In \<repo\> you have to write a clonable URL (e.g. from: GitHub, BitBucket or similar versioning service).
+The only way of using the tool is from this command ``` jolie orchestrator_jo_unit.ol <repo path/URL> ```. 
 
 You can also write a Script with a list of similar command and different address
