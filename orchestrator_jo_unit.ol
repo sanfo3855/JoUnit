@@ -223,14 +223,6 @@ main {
       rmCnt.id = global.freshname + "-1";
       rmImg.name = global.freshname;
 
-      if( request == "GoalNotFound: init" ){
-        filetr.filename = "LOGGER";
-        readFile@File( filetr )( filer );
-        filew.filename = "LOGGER";
-        filew.content = filer.content + request;
-        writeFile@File( filew )( )
-      };
-
       scope( stopScope )
       {
         install( NoSuchContainer => println@Console("Fault Raised: NoSuchContainer  " + stopScope.NoSuchContainer.message)( ); halt@Runtime()() );
