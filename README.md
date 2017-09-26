@@ -150,6 +150,6 @@ After cloning JoUnit's repository, you maybe need to edit the ```config.ini``` i
 ## 3 - JoUnit Usage 
 This tool works only with a clonable repository. This tool supports local repository (both absolute and relative path) and online repository ( URL )
 
-The only way of using the tool is from this command ``` ./JoUnit <repo path/URL> ```. 
+To run the tool go in JoUnit cloned directory and run ``` ./JoUnit <repo path or URL> ```. 
 
 You can also write a Script with a list of similar command and different address
