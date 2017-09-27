@@ -60,44 +60,14 @@ define __checkJocker {
   {
     connectionAttempt++;
     install( IOException =>
-      println@Console( "--> JOCKER !!Connection Refused!!" )();
-      if(connectionAttempt == 1){
-          registerForInput@Console()();
-          print@Console( "Do you want run a new Jocker Container on this Host-machine? (Y/n)" )( );
-          in( response );
-          if( response == "Y"){
-            JockerLocation = iniParsed.Locations[0].JockerLocation[0];
-            JockerLocation.regex = ":";
-            split@StringUtils( JockerLocation )( res );
-            port = res.result[ #res.result-1];
-            println@Console( "--> Starting Jocker on " + port + "..." )();
-
-            println@Console( "PULL jolielang/jocker from DockerHub... " )();
-            cmd = "sudo docker pull jolielang/jocker";
-            cmd.stdOutConsoleEnable = true;
-            exec@Exec( cmd )( response );
-
-            println@Console( "RUNNING Jocker Container..." )();
-            cmd = "sudo docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p "+ port + ":8008 jolielang/jocker";
-            cmd.stdOutConsoleEnable = true;
-            exec@Exec( cmd )( response );
-
-            println@Console( "Testing Connection to Jocker..." )();
-            sleep@Time( connectionAttempt * 3000 )( );
-            __checkJocker
-          } else {
-            println@Console( "\nOK. You MUST config a valid and runned Jocker Container!!" )();
-            halt@Runtime()()
-          }
-        } else if ( connectionAttempt < 4){
-          println@Console( "--> Testing Connection to Jocker..." )();
-          sleep@Time( connectionAttempt * 3000)();
-          __checkJocker
-        } else {
-          println@Console( " !!Cannot connect to Jocker!! \n Try to start Jocker Manually" )()
-        }
+      println@Console( "--> JOCKER !!Connection Refused!!\n\n"+
+        "Run Jocker with this commands:\n"+
+        "-->   sudo docker pull jolielang/jocker\n" +
+        "-->   sudo docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p <localPort>:8008 jolielang/jocker" )();
+      halt@Runtime()()
     );
-    containers@Jocker( )( response )
+    containers@Jocker( )( response );
+    sleep@Time( 2000 )( )
   }
 }
 
