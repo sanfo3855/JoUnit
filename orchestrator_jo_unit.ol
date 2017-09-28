@@ -60,25 +60,29 @@ define __checkJocker {
   {
     connectionAttempt++;
     install( IOException =>
-      println@Console( "--> JOCKER !!Connection Refused!!\n\n"+
-        "Run Jocker with this commands:\n"+
-        "-->   sudo docker pull jolielang/jocker\n" +
-        "-->   sudo docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p <localPort>:8008 jolielang/jocker" )();
+      println@Console( "\nJOCKER !!Connection Refused!!\n\n"+
+        "If you have a stopped jocker container yet\n" +
+        "-->   sudo docker start <name jocker container>\n\n" +
+        "To download Jocker container image from Dockerhub\n"+
+        "-->   sudo docker pull jolielang/jocker\n\n" +
+        "To run a new Jocekr container\n"+
+        "-->   sudo docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p <localPort>:8008 jolielang/jocker\n"
+      )();
       halt@Runtime()()
     );
-    containers@Jocker( )( response );
-    sleep@Time( 2000 )( )
+    containers@Jocker( )( response )
+
   }
 }
 
 
 init{
-
-    // Parse configuration file
-    parseIniFile@IniUtils( "config.ini" )( iniParsed );
-    // Checking if JoUnit con reach JokerContainer;
-    println@Console( "--> Checking if JOCKER is online..." )();
+  // Parse configuration file
+  parseIniFile@IniUtils( "config.ini" )( iniParsed );
+  // Checking if JoUnit con reach JokerContainer;
+  println@Console( "\nChecking if JOCKER is online..." )();
   __checkJocker;
+  sleep@Time( 3000 )( );
 
   if(#args == 0){
     // error if args = 0 (there are no argument)
