@@ -71,7 +71,6 @@ define __checkJocker {
       halt@Runtime()()
     );
     images@Jocker( )( response )
-
   }
 }
 
