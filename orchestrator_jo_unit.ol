@@ -70,7 +70,7 @@ define __checkJocker {
       )();
       halt@Runtime()()
     );
-    containers@Jocker( )( response )
+    images@Jocker( )( response )
 
   }
 }
